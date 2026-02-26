@@ -39,17 +39,21 @@
 			Stalker = 1,
 			Sentry = 2, //sentry
 			Idol = 3,
-			Guttertank = 4
+			Guttertank = 4,
+			Providence = 5,
+			Deathcatcher = 6
 		}
 
 		/// <summary>
-		/// special enemies in order of where they appear in the melee enemies array.
+		/// special enemies in order of where they appear in the special enemies array.
 		/// </summary>
 		public enum SpecialEnemies
 		{
 			Mindflayer = 0,
 			Insurrectionist = 1,
-			Ferryman = 2
+			Ferryman = 2,
+			Power = 3,
+			MirrorReaper = 4
 		}
 	}
 }

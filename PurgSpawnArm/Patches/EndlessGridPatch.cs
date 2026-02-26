@@ -1,18 +1,12 @@
-﻿using BepInEx;
-using GameConsole.Commands;
-using HarmonyLib;
+﻿using HarmonyLib;
 using PurgatorioCyberGrind.Systems;
 using PurgSpawnArm;
-using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Reflection.Emit;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
-using UnityEngine.ResourceManagement.AsyncOperations;
-using UnityEngine.UIElements.UIR;
 using static PurgatorioCyberGrind.Systems.CustomCyberGrindEntry;
-using static UnityEngine.UIElements.UIR.Implementation.UIRStylePainter;
 
 namespace PurgatorioCyberGrind.Patches
 {
@@ -21,7 +15,7 @@ namespace PurgatorioCyberGrind.Patches
 	{
 		private static bool instanced = false;
 
-		public const int totalVanillaEnemies = 38; //Total EnemyTypes, will most likely get outdated once Fraud releases
+		public const int totalVanillaEnemies = 43; //Total EnemyTypes, will most likely get outdated once Treachery releases
 
 		//Add Enemies to the cybergrind enemy pool
 		[HarmonyPatch("Start"), HarmonyPostfix]
@@ -94,7 +88,7 @@ namespace PurgatorioCyberGrind.Patches
 											break;
 										}
 									}
-									
+
 									newEnemyEntry[j] = val;
 								}
 							}
@@ -253,13 +247,13 @@ namespace PurgatorioCyberGrind.Patches
 
 			log.Log(BepInEx.Logging.LogLevel.Info, "The following logs are each cybergrind type and their enemies listed");
 			for (int i = 0; i < prefabs.meleeEnemies.Length; i++)
-				BepInEx.Logging.Logger.CreateLogSource("Purg Spawn Arm").Log(BepInEx.Logging.LogLevel.Info, "melee " + i + " type: " + CybergrindEntryLoader.GetEntryName((int)prefabs.meleeEnemies[i].enemyType));
+				BepInEx.Logging.Logger.CreateLogSource("Purg Spawn Arm").Log(BepInEx.Logging.LogLevel.Info, "melee " + i + " type: " + CybergrindEntryLoader.GetEntryName((int)prefabs.meleeEnemies[i].enemyType) + " | cost: " + prefabs.meleeEnemies[i].spawnCost + " | spawn wave: " + prefabs.meleeEnemies[i].spawnWave + "| enemy type: " + ((int)prefabs.meleeEnemies[i].enemyType));
 			for (int i = 0; i < prefabs.projectileEnemies.Length; i++)
-				BepInEx.Logging.Logger.CreateLogSource("Purg Spawn Arm").Log(BepInEx.Logging.LogLevel.Info, "projectile " + i + " type: " + CybergrindEntryLoader.GetEntryName((int)prefabs.projectileEnemies[i].enemyType));
+				BepInEx.Logging.Logger.CreateLogSource("Purg Spawn Arm").Log(BepInEx.Logging.LogLevel.Info, "projectile " + i + " type: " + CybergrindEntryLoader.GetEntryName((int)prefabs.projectileEnemies[i].enemyType) + " | cost: " + prefabs.projectileEnemies[i].spawnCost + " | spawn wave: " + prefabs.projectileEnemies[i].spawnWave + "| enemy type: " + ((int)prefabs.projectileEnemies[i].enemyType));
 			for (int i = 0; i < prefabs.uncommonEnemies.Length; i++)
-				BepInEx.Logging.Logger.CreateLogSource("Purg Spawn Arm").Log(BepInEx.Logging.LogLevel.Info, "uncommon " + i + " type: " + CybergrindEntryLoader.GetEntryName((int)prefabs.uncommonEnemies[i].enemyType));
+				BepInEx.Logging.Logger.CreateLogSource("Purg Spawn Arm").Log(BepInEx.Logging.LogLevel.Info, "uncommon " + i + " type: " + CybergrindEntryLoader.GetEntryName((int)prefabs.uncommonEnemies[i].enemyType) + " | cost: " + prefabs.uncommonEnemies[i].spawnCost + " | spawn wave: " + prefabs.uncommonEnemies[i].spawnWave + "| enemy type: " + ((int)prefabs.uncommonEnemies[i].enemyType));
 			for (int i = 0; i < prefabs.specialEnemies.Length; i++)
-				BepInEx.Logging.Logger.CreateLogSource("Purg Spawn Arm").Log(BepInEx.Logging.LogLevel.Info, "special " + i + " type: " + CybergrindEntryLoader.GetEntryName((int)prefabs.specialEnemies[i].enemyType));
+				BepInEx.Logging.Logger.CreateLogSource("Purg Spawn Arm").Log(BepInEx.Logging.LogLevel.Info, "special " + i + " type: " + CybergrindEntryLoader.GetEntryName((int)prefabs.specialEnemies[i].enemyType) + " | cost: " + prefabs.specialEnemies[i].spawnCost + " | spawn wave: " + prefabs.specialEnemies[i].spawnWave + "| enemy type: " + ((int)prefabs.specialEnemies[i].enemyType));
 		}
 	}
 }
