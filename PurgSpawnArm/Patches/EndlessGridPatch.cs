@@ -1,18 +1,12 @@
-﻿using BepInEx;
-using GameConsole.Commands;
-using HarmonyLib;
+﻿using HarmonyLib;
 using PurgatorioCyberGrind.Systems;
 using PurgSpawnArm;
-using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Reflection.Emit;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
-using UnityEngine.ResourceManagement.AsyncOperations;
-using UnityEngine.UIElements.UIR;
 using static PurgatorioCyberGrind.Systems.CustomCyberGrindEntry;
-using static UnityEngine.UIElements.UIR.Implementation.UIRStylePainter;
 
 namespace PurgatorioCyberGrind.Patches
 {
@@ -193,36 +187,29 @@ namespace PurgatorioCyberGrind.Patches
 
 			codeMatcher
 				.Start()
-				.MatchForward(false,
-					new CodeMatch(OpCodes.Ldfld, typeof(PrefabDatabase).GetField(nameof(PrefabDatabase.specialEnemies))),
-					new CodeMatch(OpCodes.Ldloc_S),
-					new CodeMatch(OpCodes.Ldelem_Ref),
+				.MatchForward(true, //when this is true...
 					new CodeMatch(OpCodes.Ldfld, typeof(EndlessGrid).GetField(nameof(EndlessEnemy.spawnCost))),
 					new CodeMatch(OpCodes.Conv_R4),
 					new CodeMatch(OpCodes.Ldloc_S),
-					new CodeMatch(OpCodes.Add),
-					new CodeMatch(OpCodes.Blt_Un))
-				.ThrowIfInvalid("Could not locate initial special enemies spawn cost check")
-				.MatchForward(true,
-					new CodeMatch(OpCodes.Ldfld, typeof(PrefabDatabase).GetField(nameof(PrefabDatabase.specialEnemies))),
-					new CodeMatch(OpCodes.Ldloc_S))
-				.ThrowIfInvalid("Could not locate the getting of the special enemies index loc varnum");
+					new CodeMatch(OpCodes.Ldloc_S)) //...this is the opcode to get
+				.ThrowIfInvalid("Could not locate initial special enemies spawn cost check");
 			codeMatcher.Instruction.LdlocIndex(out var locIndexSpecialEnemyIndex);
 			codeMatcher
-				.MatchForward(true,
-					new CodeMatch(OpCodes.Ldelem_Ref),
+				.MatchBack(true,
 					new CodeMatch(OpCodes.Ldfld, typeof(EndlessGrid).GetField(nameof(EndlessEnemy.spawnCost))),
 					new CodeMatch(OpCodes.Conv_R4),
 					new CodeMatch(OpCodes.Ldloc_S),
+					new CodeMatch(OpCodes.Ldloc_S),
+					new CodeMatch(OpCodes.Ldelem_R4),
 					new CodeMatch(OpCodes.Add),
 					new CodeMatch(OpCodes.Blt_Un))
 				.ThrowIfInvalid("Could not locate the blt.un jump instruction after the special enemies spawn cost check");
-			var IL_054e = codeMatcher.Operand;
+			var IL_05a2 = codeMatcher.Operand;
 			codeMatcher.Advance(1).Insert(
 					new CodeInstruction(OpCodes.Ldloc, locIndexSpecialEnemyIndex),
 					new CodeInstruction(OpCodes.Ldarg_0),
 					new CodeInstruction(OpCodes.Call, typeof(EndlessGridPatch).GetMethod(nameof(GetEnemiesCapSpecials), BindingFlags.Static | BindingFlags.NonPublic)),
-					new CodeInstruction(OpCodes.Brfalse, IL_054e))
+					new CodeInstruction(OpCodes.Brfalse, IL_05a2))
 				.ThrowIfInvalid("Could not inject additional special enemies check");
 
 			return codeMatcher.InstructionEnumeration();
@@ -253,13 +240,13 @@ namespace PurgatorioCyberGrind.Patches
 
 			log.Log(BepInEx.Logging.LogLevel.Info, "The following logs are each cybergrind type and their enemies listed");
 			for (int i = 0; i < prefabs.meleeEnemies.Length; i++)
-				BepInEx.Logging.Logger.CreateLogSource("Purg Spawn Arm").Log(BepInEx.Logging.LogLevel.Info, "melee " + i + " type: " + CybergrindEntryLoader.GetEntryName((int)prefabs.meleeEnemies[i].enemyType) + " | cost: " + prefabs.meleeEnemies[i].spawnCost + " | spawn wave: " + prefabs.meleeEnemies[i].spawnWave + "| enemy type: " + ((int)prefabs.meleeEnemies[i].enemyType));
+				BepInEx.Logging.Logger.CreateLogSource("Purg Spawn Arm").Log(BepInEx.Logging.LogLevel.Info, "melee " + i + " type: " + CybergrindEntryLoader.GetEntryName((int)prefabs.meleeEnemies[i].enemyType) + " | cost: " + prefabs.meleeEnemies[i].spawnCost + " | spawn wave: " + prefabs.meleeEnemies[i].spawnWave + "| enemy type: " + ((int)prefabs.meleeEnemies[i].enemyType) + " | cost increase: " + prefabs.meleeEnemies[i].costIncreasePerSpawn);
 			for (int i = 0; i < prefabs.projectileEnemies.Length; i++)
-				BepInEx.Logging.Logger.CreateLogSource("Purg Spawn Arm").Log(BepInEx.Logging.LogLevel.Info, "projectile " + i + " type: " + CybergrindEntryLoader.GetEntryName((int)prefabs.projectileEnemies[i].enemyType) + " | cost: " + prefabs.projectileEnemies[i].spawnCost + " | spawn wave: " + prefabs.projectileEnemies[i].spawnWave + "| enemy type: " + ((int)prefabs.projectileEnemies[i].enemyType));
+				BepInEx.Logging.Logger.CreateLogSource("Purg Spawn Arm").Log(BepInEx.Logging.LogLevel.Info, "projectile " + i + " type: " + CybergrindEntryLoader.GetEntryName((int)prefabs.projectileEnemies[i].enemyType) + " | cost: " + prefabs.projectileEnemies[i].spawnCost + " | spawn wave: " + prefabs.projectileEnemies[i].spawnWave + "| enemy type: " + ((int)prefabs.projectileEnemies[i].enemyType) + " | cost increase: " + prefabs.projectileEnemies[i].costIncreasePerSpawn);
 			for (int i = 0; i < prefabs.uncommonEnemies.Length; i++)
-				BepInEx.Logging.Logger.CreateLogSource("Purg Spawn Arm").Log(BepInEx.Logging.LogLevel.Info, "uncommon " + i + " type: " + CybergrindEntryLoader.GetEntryName((int)prefabs.uncommonEnemies[i].enemyType) + " | cost: " + prefabs.uncommonEnemies[i].spawnCost + " | spawn wave: " + prefabs.uncommonEnemies[i].spawnWave + "| enemy type: " + ((int)prefabs.uncommonEnemies[i].enemyType));
+				BepInEx.Logging.Logger.CreateLogSource("Purg Spawn Arm").Log(BepInEx.Logging.LogLevel.Info, "uncommon " + i + " type: " + CybergrindEntryLoader.GetEntryName((int)prefabs.uncommonEnemies[i].enemyType) + " | cost: " + prefabs.uncommonEnemies[i].spawnCost + " | spawn wave: " + prefabs.uncommonEnemies[i].spawnWave + "| enemy type: " + ((int)prefabs.uncommonEnemies[i].enemyType) + " | cost increase: " + prefabs.uncommonEnemies[i].costIncreasePerSpawn);
 			for (int i = 0; i < prefabs.specialEnemies.Length; i++)
-				BepInEx.Logging.Logger.CreateLogSource("Purg Spawn Arm").Log(BepInEx.Logging.LogLevel.Info, "special " + i + " type: " + CybergrindEntryLoader.GetEntryName((int)prefabs.specialEnemies[i].enemyType) + " | cost: " + prefabs.specialEnemies[i].spawnCost + " | spawn wave: " + prefabs.specialEnemies[i].spawnWave + "| enemy type: " + ((int)prefabs.specialEnemies[i].enemyType));
+				BepInEx.Logging.Logger.CreateLogSource("Purg Spawn Arm").Log(BepInEx.Logging.LogLevel.Info, "special " + i + " type: " + CybergrindEntryLoader.GetEntryName((int)prefabs.specialEnemies[i].enemyType) + " | cost: " + prefabs.specialEnemies[i].spawnCost + " | spawn wave: " + prefabs.specialEnemies[i].spawnWave + "| enemy type: " + ((int)prefabs.specialEnemies[i].enemyType) + " | cost increase: " + prefabs.specialEnemies[i].costIncreasePerSpawn);
 		}
 	}
 }
