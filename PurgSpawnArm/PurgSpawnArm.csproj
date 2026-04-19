@@ -59,6 +59,9 @@
 		<Reference Include="PluginConfiguratorComponents">
 		  <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\ULTRAKILL\BepInEx\plugins\PluginConfigurator\PluginConfiguratorComponents.dll</HintPath>
 		</Reference>
+		<Reference Include="UltraEnemyAPI">
+		  <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\ULTRAKILL\BepInEx\plugins\UltraEnemyAPI\UltraEnemyAPI.dll</HintPath>
+		</Reference>
 		<Reference Include="Unity.Addressables">
 			<HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\ULTRAKILL\ULTRAKILL_Data\Managed\Unity.Addressables.dll</HintPath>
 		</Reference>

@@ -3,7 +3,6 @@ using HarmonyLib;
 using PluginConfig;
 using PluginConfig.API;
 using PluginConfig.API.Fields;
-using PurgatorioCyberGrind.Systems;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -89,7 +88,6 @@ namespace PurgSpawnArm
 			//Loads all classes inheriting CustomCyberGrindEntry
 			//To add a custom enemy to the grind, simply inherit from CustomCyberGrindEntry
 			//Recommended to look at either CravenEntry or NeitralizerEntry as examples of how to use this system
-			CybergrindEntryLoader.RegisterAllEntries();
 
 			_harmony = new Harmony(GUID);
             _harmony.PatchAll();
